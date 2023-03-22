@@ -28,7 +28,7 @@ my $method = 0; # 0 - recursive / 1 - BFS iterative / 2 - interactive
 
 sub Usage
 {
-   print "Tower Of Hanoi Puzzle Solver.\n";
+   CopyrightNotice();
    print "https://en.wikipedia.org/wiki/Tower_of_Hanoi\n";
    print "Usage:\n";
    print "   hanoi.pl src spare dest disks [method]\n";
@@ -260,10 +260,12 @@ sub HanoiBFSIter
    my %seen = ();
    my $idx = -1;
 
+   print "Searching...\n";
    for (my ($i, $state) = (0, $solved);
         $state ne $start;
         $i++, $state = $all_states[$i]) {
 
+      print "States checked: $i\r";
       SetState($state);
       my $move12 = MoveDisk(1, 2, 1);
       SetState($state);
@@ -343,9 +345,11 @@ sub HanoiBFSIter
          }
       }
    }
+   print "\n";
    $moves = 0;
    if ($idx >= 0) {
 
+      print "Path to solution found.\n\n";
       for (my $i = $idx; $i > 0; $i = $bt_index[$i]) {
          $moves++;
          print "$moves)\n";
@@ -367,10 +371,6 @@ sub HanoiPlay
 {
    my $start = GetStateStr();
 
-   print "Welcome to the Tower Of Hanoi puzzle.\n";
-   print "Goal - move the disks from peg $src to peg $dst.\n";
-   print "Use peg $mid as spare.\n";
-   print "NOTE: You cannot put larger disk on top of the smaller one.\n";
    print "Use following format for commands:\n";
    print "   PEG#[SPACE]PEG# - to move disk from peg to peg,\n";
    print "   Q|q - to quit.\n";
@@ -397,6 +397,16 @@ sub HanoiPlay
          }
       }
    }
+   if (2**$disks - 1 == $moves) {
+      print "Well done!\n";
+   }
+}
+
+sub CopyrightNotice
+{
+   print "\nTower Of Hanoi Puzzle Solver.\n";
+   print "(C) Marek Karcz 2023. All right reserved.\n";
+   print "Free for personal and educational use.\n";
 }
 
 sub Main
@@ -413,6 +423,10 @@ sub Main
       push(@{$towers[$mid - 1]}, 0);
       push(@{$towers[$dst - 1]}, 0);
    }
+   CopyrightNotice();
+   print "Goal - move the disks from peg $src to peg $dst.\n";
+   print "Use peg $mid as spare.\n";
+   print "You cannot put larger disk on top of the smaller one.\n";
    ShowTowers;
    if (0 == $method) {
       Hanoi($src, $mid, $dst, $disks);
@@ -429,9 +443,9 @@ sub Main
       print "move!\n";
    }
    if ($moves > 2**$disks - 1) {
-       print "WARNING!\n";
-       print "   Solution is sub-optimal.\n";
-       print "   Optimal solution for this configuration -";
+       print "NOTE:\n";
+       print "Solution is suboptimal.\n";
+       print "Optimal solution for this configuration -";
        print " " . (2**$disks - 1) . " moves.\n";
    }
 }
