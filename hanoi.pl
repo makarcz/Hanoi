@@ -259,6 +259,7 @@ sub HanoiBFSIter
    my $start = GetStateStr();
    my %seen = ();
    my $idx = -1;
+   my @branches = ([1,2], [1,3], [2,1], [2,3], [3,1], [3,2]);
 
    print "Searching...\n";
    for (my ($i, $state) = (0, $solved);
@@ -266,82 +267,19 @@ sub HanoiBFSIter
         $i++, $state = $all_states[$i]) {
 
       print "States checked: $i\r";
-      SetState($state);
-      my $move12 = MoveDisk(1, 2, 1);
-      SetState($state);
-      my $move13 = MoveDisk(1, 3, 1);
-      SetState($state);
-      my $move21 = MoveDisk(2, 1, 1);
-      SetState($state);
-      my $move23 = MoveDisk(2, 3, 1);
-      SetState($state);
-      my $move31 = MoveDisk(3, 1, 1);
-      SetState($state);
-      my $move32 = MoveDisk(3, 2, 1);
+      for (my $v = 0; $v < 6; $v++) {
+         SetState($state);
+         my $move = MoveDisk($branches[$v][0], $branches[$v][1], 1);
+         
+         if ($move ne "" and not defined($seen{$move})) {
+            $seen{$move} = $move;
+            push(@all_states, $move);
+            push(@bt_index, $i);
 
-      if ($move12 ne "" and not defined($seen{$move12})) {
-         $seen{$move12} = $move12;
-         push(@all_states, $move12);
-         push(@bt_index, $i);
-
-         if ($move12 eq $start) {
-            $idx = $i;
-            next;
-         }
-      }
-
-      if ($move13 ne "" and not defined($seen{$move13})) {
-         $seen{$move13} = $move13;
-         push(@all_states, $move13);
-         push(@bt_index, $i);
-
-         if ($move13 eq $start) {
-            $idx = $i;
-            next;
-         }
-      }
-
-      if ($move21 ne "" and not defined($seen{$move21})) {
-         $seen{$move21} = $move21;
-         push(@all_states, $move21);
-         push(@bt_index, $i);
-
-         if ($move21 eq $start) {
-            $idx = $i;
-            next;
-         }
-      }
-
-      if ($move23 ne "" and not defined($seen{$move23})) {
-         $seen{$move23} = $move23;
-         push(@all_states, $move23);
-         push(@bt_index, $i);
-
-         if ($move23 eq $start) {
-            $idx = $i;
-            next;
-         }
-      }
-
-      if ($move31 ne "" and not defined($seen{$move31})) {
-         $seen{$move31} = $move31;
-         push(@all_states, $move31);
-         push(@bt_index, $i);
-
-         if ($move31 eq $start) {
-            $idx = $i;
-            next;
-         }
-      }
-
-      if ($move32 ne "" and not defined($seen{$move32})) {
-         $seen{$move32} = $move32;
-         push(@all_states, $move32);
-         push(@bt_index, $i);
-
-         if ($move32 eq $start) {
-            $idx = $i;
-            next;
+            if ($move eq $start) {
+               $idx = $i;
+               last;
+            }
          }
       }
    }
